@@ -7,7 +7,8 @@
 *and process/transform the data (if necessary) into a format suitable*
 *for your analysis.*
 
-```{r}
+
+```r
 data = read.csv("activity.csv")
 ```
 
@@ -18,7 +19,8 @@ data = read.csv("activity.csv")
 
 *Make a histogram of the total number of steps taken each day.* 
 
-```{r}
+
+```r
 library(data.table)
 
 d <- data[complete.cases(data),]
@@ -29,12 +31,25 @@ hist(byDate$steps, xlab="Number of steps", ylab="Number of days",
      main="Distribution of days with varying numbers of steps")
 ```
 
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2.png) 
+
 *Calculate and report the mean and median total number of steps taken per day*
 
-```{r}
-mean(byDate$steps)
 
+```r
+mean(byDate$steps)
+```
+
+```
+## [1] 10766
+```
+
+```r
 median(byDate$steps)
+```
+
+```
+## [1] 10765
 ```
 The mean and median can be seen above.
 
@@ -44,7 +59,8 @@ The mean and median can be seen above.
 *(i.e. type = "l") of the 5-minute interval (x-axis)*
 *and the average number of steps taken, averaged across all days (y-axis)*
 
-```{r}
+
+```r
 byInterval <- dt[,mean(steps),by=interval]
 setnames(byInterval, "V1", "meanSteps")
 plot(byInterval$interval, byInterval$meanSteps, 
@@ -52,12 +68,19 @@ plot(byInterval$interval, byInterval$meanSteps,
      main="Daily activity pattern")
 ```
 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4.png) 
+
 *Which 5-minute interval, on average across all the days in the dataset,*
 *contains the maximum number of steps?*
 
-```{r}
+
+```r
 index <- which(byInterval$meanSteps == max(byInterval$meanSteps))
 byInterval$interval[index]
+```
+
+```
+## [1] 835
 ```
 
 The answer is interval 835.
@@ -70,8 +93,13 @@ The answer is interval 835.
 *Calculate and report the total number of missing values in the dataset* 
 *(i.e. the total number of rows with NAs)*
 
-```{r}
+
+```r
 sum(!complete.cases(data))
+```
+
+```
+## [1] 2304
 ```
 
 There are 2304 missing values.
@@ -84,7 +112,8 @@ There are 2304 missing values.
 
 Here I use the mean for that 5-minute interval:
 
-```{r}
+
+```r
 dataImputed <- data
 for (i in seq(data$steps))
 {
@@ -102,14 +131,30 @@ for (i in seq(data$steps))
 *is the impact of imputing missing data on the estimates of the total daily*
 *number of steps?*
 
-```{r}
+
+```r
 byDate <- data.table(dataImputed)[,sum(steps),by=date]
 setnames(byDate, "V1", "steps")
 hist(byDate$steps, xlab="Number of steps", ylab="Number of days", 
      main="Distribution of days with varying numbers of steps")
+```
 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
+
+```r
 mean(byDate$steps)
+```
+
+```
+## [1] 10766
+```
+
+```r
 median(byDate$steps)
+```
+
+```
+## [1] 10766
 ```
 
 The mean is the same but the median is different. The center of the
@@ -122,7 +167,8 @@ histogram also now contains many more values.
 *Create a new factor variable in the dataset with two levels - "weekday" and*
 *"weekend" indicating whether a given date is a weekday or weekend day.*
 
-```{r}
+
+```r
 dataImputed$date <- as.Date(dataImputed$date, format = "%Y-%m-%d")
 
 wkdays <- weekdays(dataImputed$date)
@@ -136,11 +182,14 @@ dataImputed$daytype <-
 *5-minute interval (x-axis) and the average number of steps taken, averaged* 
 *across all weekday days or weekend days (y-axis).*
 
-```{r}
+
+```r
 library(lattice)
 xyplot(steps ~ interval | daytype, dataImputed, type="l", 
        layout=c(1,2), ylab="number of steps")
 ```
+
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
 
 Steps tend to ramp up later in the day on weekends. (Sleeping in?)
 
